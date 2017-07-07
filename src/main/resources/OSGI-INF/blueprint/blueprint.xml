@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint  default-activation="eager" 
+            xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.0.0"
+            xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.0.0"
+			
+			xsi:schemaLocation="
+			http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0 
+			http://www.w3.org/2001/XMLSchema-instance http://www.w3.org/2001/XMLSchema-instance 
+			http://aries.apache.org/xmlns/jpa/v1.0.0 http://aries.apache.org/xmlns/jpa/v1.0.0 
+			http://aries.apache.org/xmlns/transactions/v1.0.0 http://aries.apache.org/xmlns/transactions/v1.0.0 ">
+
+  <bean id="personService" class="com.iqmsoft.osgi.karaf.jpa.impl.PersonServiceImpl"> 
+      <jpa:context unitname="person" property="entityManager"/>
+      <tx:transaction method="*" value="Required"/>
+  </bean>
+  
+  <service ref="personService" interface="com.iqmsoft.osgi.karaf.jpa.PersonService" />
+  
+  <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+        <command name="person/add">
+            <action class="com.iqmsoft.osgi.karaf.jpa.command.AddPersonCommand">
+                <property name="personService" ref="personService"/>
+            </action>
+        </command>
+        <command name="person/list">
+            <action class="com.iqmsoft.osgi.karaf.jpa.command.ListPersonsCommand">
+                <property name="personService" ref="personService"/>
+            </action>
+        </command>
+        <command name="person/deleteAll">
+            <action class="com.iqmsoft.osgi.karaf.jpa.command.DeleteAllPersonsCommand">
+                <property name="personService" ref="personService"/>
+            </action>
+        </command>
+    </command-bundle>
+</blueprint>
